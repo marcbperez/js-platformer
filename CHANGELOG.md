@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org).
 
+## 0.2.0 - 2016-12-26
+
+### Added
+
+  - Assets and favicon.
+  - Default template style.
+  - Main template and script.
+  - Application classes.
+
 ## 0.1.0 - 2016-12-25
 
 ### Added
