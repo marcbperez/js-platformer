@@ -1,4 +1,4 @@
-var Solid = function(x, y, w, h, c) {
+var Death = function(x, y, w, h, c) {
   this.x = x;
   this.y = y;
   this.w = w;
@@ -6,19 +6,21 @@ var Solid = function(x, y, w, h, c) {
   this.c = c;
 };
 
-Solid.prototype.display = function() {
+Death.prototype.display = function() {
   noStroke();
-  fill(0);
+  fill(255, 0, 0);
   rect(this.x, this.y, this.w, this.h);
 };
 
-Solid.prototype.contains = function(m) {
+Death.prototype.contains = function(m) {
   var p = m.position;
   return p.x + m.w >= this.x && p.x <= this.x + this.w &&
     p.y + m.h >= this.y && p.y <= this.y + this.h;
 };
 
-Solid.prototype.calculateDrag = function(m) {
+Death.prototype.calculateDrag = function(m) {
+  m.dead = true;
+  
   if (m.position.y > this.y) {
     m.velocity.x *= 0;
     if (m.position.x < this.x) {
