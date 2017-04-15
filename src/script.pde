@@ -1,53 +1,69 @@
-var solid, liquid, mover;
+var platforms, player, movers;
 
 void setup() {
   size(window.innerWidth, window.innerHeight);
   smooth(8);
   frameRate(60);
 
-  solid = new Solid(100, height/2, width/3, height/2, 0.5);
-  liquid = new Liquid(width/3+100, height/2, width/3, height/2, 0.6);
-  mover = new Mover(5, 100, 0);
+  platforms = [
+    new Solid(width/3, height-(height/3), width/3, height/3, 1),
+    new Death(0, height-(height/6), width, height/3, 1),
+  ];
+
+  player = new Mover(5, width/2, height/2);
+  movers = [player];
 }
 
 void draw() {
   background(219, 253, 255);
 
-  solid.display();
-  liquid.display();
-
-  if (liquid.contains(mover)) {
-    mover.grounded = true;
-    var dragForce = liquid.calculateDrag(mover);
-    mover.applyForce(dragForce);
-  } else if (solid.contains(mover)) {
-    mover.grounded = true;
-    var dragForce = solid.calculateDrag(mover);
-    mover.applyForce(dragForce);
-  } else {
-    mover.grounded = false;
+  for (var i in platforms) {
+    platforms[i].display();
   }
 
-  var gravity = new PVector(0, 0.1 * mover.mass);
-  mover.applyForce(gravity);
-  mover.update();
-  mover.display();
-  mover.checkEdges();
+  for (var i in movers) {
+    var gravity = new PVector(0, movers[i].mass);
+    movers[i].applyForce(gravity);
+    movers[i].update();
+    movers[i].grounded = false;
+
+    for (var j in platforms) {
+      if (platforms[j].contains(movers[i])) {
+        platforms[j].calculateDrag(movers[i]);
+      }
+    }
+
+    movers[i].display();
+
+    if (movers[i].dead) {
+      var particle = new Particle(1.5, movers[i].position.x+(movers[i].w/2),
+        movers[i].position.y+(movers[i].h/2));
+      var explosion = new PVector(random(-30,30), random(-30,30));
+      particle.applyForce(explosion);
+      movers.push(particle);
+    }
+  }
 }
 
 void keyPressed() {
-  if (key === 'w' && mover.grounded) {
-    var pv = new PVector(0, -5 * mover.mass);
-    mover.applyForce(pv);
+  if (player.dead) {
+    return;
   }
+
+  if (key === 'w' && player.grounded) {
+    var pv = new PVector(0, -20 * player.mass);
+    player.applyForce(pv);
+  }
+
   if (key === 'a') {
-    var c = mover.grounded ? -2 : -0.5;
-    var pv = new PVector(c * mover.mass, 0);
-    mover.applyForce(pv);
+    var c = player.grounded ? -10 : -5;
+    var pv = new PVector(c * player.mass, 0);
+    player.applyForce(pv);
   }
+
   if (key === 'd') {
-    var c = mover.grounded ? 2 : 0.5;
-    var pv = new PVector(c * mover.mass, 0);
-    mover.applyForce(pv);
+    var c = player.grounded ? 10 : 5;
+    var pv = new PVector(c * player.mass, 0);
+    player.applyForce(pv);
   }
 }
